@@ -6,6 +6,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/boriska70/dockermon-go/collectors"
+	"flag"
 )
 
 var timeLayout="2006-01-02 15:04:05";
@@ -16,12 +17,15 @@ func init() {
 
 func main() {
 
-	log.Infof("Star running dockermon-go at %v", time.Now().Format(timeLayout));
+	cci := flag.Int64("cci", 60, "Container Collection Interval")
+	log.Debugf("Running with container collection interval %v", *cci)
 
-	client := collectors.NewClient()
+	log.Infof("Start running dockermon-go at %v", time.Now().Format(timeLayout));
+
+	client := collectors.NewClient(*cci)
 	log.Infof("Client: %v", client)
-	client.ListContainers();
-	client.Cl.StartMonitorEvents(client.EventCallBack, nil);
+	go client.ListContainers();
+	go client.Cl.StartMonitorEvents(client.EventCallBack, nil);
 	time.Sleep(3600 * time.Second)
 
 
