@@ -25,7 +25,7 @@ func main() {
 	client := collectors.NewClient(*cci)
 	log.Infof("Client: %v", client)
 	go client.ListContainers();
-	go client.Cl.StartMonitorEvents(client.EventCallBack, nil);
+	//go client.Cl.StartMonitorEvents(client.EventCallBack, nil);
 	time.Sleep(3600 * time.Second)
 
 
