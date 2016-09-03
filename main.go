@@ -15,19 +15,24 @@ func init() {
 }
 
 func main() {
-
 	cci := flag.Int64("cci", 60, "Container Collection Interval")
 	esurl := flag.String("esurl", "http://localhost:9200", "Elasticsearch URL")
+	flag.Parse()
 	log.Debugf("Running with container collection interval %v", *cci)
+	log.Debugf("Collected data will be sent to %v", *esurl)
 
 	log.Infof("Start running dockermon-go at %v", time.Now().Format(timeLayout));
 
 	client := collectors.NewDockerClient(*cci)
-	log.Infof("Docker client created")
+	collectors.SetConstantHostData(client)
+	log.Infof("Docker client created for %v", collectors.Host)
 	elasticclient := collectors.NewEsClient(*esurl);
 	log.Infof("Elastic? ", elasticclient)
 	//go client.ListContainers();
-	go collectors.ContainerStats(client, elasticclient)
+	contChannel := make(chan collectors.ContainersBulkData)
+	go collectors.ReadAndSend(elasticclient, contChannel)
+	go collectors.ContainerStats(client, contChannel)
+
 	//go client.Cl.StartMonitorEvents(client.EventCallBack, nil);
 	time.Sleep(3600 * time.Second)
 

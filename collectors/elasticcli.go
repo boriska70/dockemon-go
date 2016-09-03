@@ -5,6 +5,8 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
+var indexName = "dockermon"
+
 type esClient struct {
 	client *elastic.Client
 }
@@ -19,4 +21,12 @@ func NewEsClient(url string) esClient {
 	}
 
 	return esClient{client}
+}
+
+func ReadAndSend(cli esClient, ch chan ContainersBulkData) {
+
+	data := <-ch
+	log.Info("Received %v", data)
+//	cli.client.Index().Index(indexName).Type("extractfromdata").BodyString(data).Do()
+
 }
