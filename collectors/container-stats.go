@@ -13,39 +13,39 @@ _	"strings"
 var Host hostData
 
 type ContainersBulkData struct {
-	contData [] containerData
-	dataType string
+	ContData [] containerData
+	DataType string
 }
 type containerData struct {
-	id string
-	names string
-	image string
-	labels string
-	ports string
-	status string
-	host hostData
+	Id     string
+	Names  string
+	Image  string
+	Labels string
+	Ports  string
+	Status string
+	Host   hostData
 }
 type hostData struct {
-	hostName string
-	os string
-	memoryTotalGB int
-	systemTyme string
-	dockerVersion string
-	totalContainers int
-	runningContainers int
+	HostName          string
+	Os                string
+	MemoryTotalGB     int
+	SystemTyme        string
+	DockerVersion     string
+	TotalContainers   int
+	RunningContainers int
 }
 
 func SetConstantHostData(client doClient)  {
 	info, _ := client.dc.Info(context.Background())
-	Host.hostName = info.Name
-	Host.os = info.OperatingSystem
-	Host.memoryTotalGB = int (info.MemTotal / 1024 / 1024)
-	Host.dockerVersion = info.ServerVersion
+	Host.HostName = info.Name
+	Host.Os = info.OperatingSystem
+	Host.MemoryTotalGB = int (info.MemTotal / 1024 / 1024)
+	Host.DockerVersion = info.ServerVersion
 }
 
 func (cbd *ContainersBulkData) addContainerData(cd containerData) [] containerData {
-	cbd.contData = append(cbd.contData, cd)
-	return cbd.contData
+	cbd.ContData = append(cbd.ContData, cd)
+	return cbd.ContData
 }
 
 func ContainerStats(client doClient, ch chan ContainersBulkData) {
@@ -55,9 +55,9 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 
 	var contBulk ContainersBulkData
 
-	Host.systemTyme = info.SystemTime
-	Host.totalContainers = info.Containers
-	Host.runningContainers = info.ContainersRunning
+	Host.SystemTyme = info.SystemTime
+	Host.TotalContainers = info.Containers
+	Host.RunningContainers = info.ContainersRunning
 /*	fmt.Printf("Hostname: %v \n", info.Name)
 	fmt.Printf("ContainersRunning: %v out of %v \n", info.ContainersRunning, info.Containers)
 	fmt.Printf("OperatingSystem: %v \n", info.OperatingSystem)
@@ -80,15 +80,15 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 			//fmt.Printf("HostConfig-NetworkNode is %v \n", c.HostConfig.NetworkMode)
 			//fmt.Printf("Networks: %v \n", c.NetworkSettings.Networks)
 			var cont containerData
-			cont.id = c.ID
-			cont.image = c.Image
+			cont.Id = c.ID
+			cont.Image = c.Image
 //			cont.names = strings.Join(c.Names,",")
 //			cont.labels = strings.Join(c.Labels,",")
 //			cont.ports = strings.Join(c.Ports,",")
-			cont.host = Host
-			contBulk.contData = contBulk.addContainerData(cont)
+			cont.Host = Host
+			contBulk.ContData = contBulk.addContainerData(cont)
 		}
-		if len(contBulk.contData) > 0 {
+		if len(contBulk.ContData) > 0 {
 			ch <- contBulk
 		}
 		time.Sleep(time.Duration(client.contListIntervalSec) * time.Second)

@@ -3,6 +3,8 @@ package collectors
 import (
 	elastic "gopkg.in/olivere/elastic.v3"
 	log "github.com/Sirupsen/logrus"
+        "encoding/json"
+	"fmt"
 )
 
 var indexName = "dockermon"
@@ -25,8 +27,16 @@ func NewEsClient(url string) esClient {
 
 func ReadAndSend(cli esClient, ch chan ContainersBulkData) {
 
-	data := <-ch
-	log.Info("Received %v", data)
-//	cli.client.Index().Index(indexName).Type("extractfromdata").BodyString(data).Do()
+	for {
+
+		data := <-ch
+
+		log.Info("Received %v", data)
+		bdata, _ := json.Marshal(data)
+		log.Info("Received json %s", string(bdata))
+		fmt.Println(string(bdata))
+
+		//cli.client.Index().Index(indexName).Type("extractfromdata").BodyString(data).Do()
+	}
 
 }
