@@ -56,7 +56,6 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 
 	var contBulk ContainersBulkData
 	contBulk.DataType="container_monitor"
-	contBulk.CollectionTime=time.Now()
 
 	Host.SystemTyme = info.SystemTime
 	Host.TotalContainers = info.Containers
@@ -66,6 +65,7 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 	for {
 		fmt.Printf("CPU Usage: %v \n", types.CPUStats{}.CPUUsage)
 		fmt.Printf("Memory Usage: %v \n", types.MemoryStats{}.MaxUsage)
+		contBulk.CollectionTime=time.Now()
 		containers, err := client.dc.ContainerList(context.Background(), options)
 		if err != nil {
 			panic(err)
