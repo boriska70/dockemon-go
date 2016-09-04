@@ -3,6 +3,9 @@ FROM golang:1.6.2-alpine
 ENV DOCKERMON_DIR /go/src/github.com/boriska70/dockermon-go
 WORKDIR $DOCKERMON_DIR
 
+
+RUN env | grep -i proxy
+
 # install curl apk
 RUN apk add --update curl
 
@@ -16,7 +19,7 @@ RUN curl -L https://github.com/Masterminds/glide/releases/download/v0.11.1/glide
  && mv /tmp/linux-amd64/glide /usr/bin/
 
 # gox - Go cross compile tool
-RUN go get -v github.com/mitchellh/gox
+# RUN go get -v github.com/mitchellh/gox
 
 # cover - Go code coverage tool
 # RUN go get -v golang.org/x/tools/cmd/cover
