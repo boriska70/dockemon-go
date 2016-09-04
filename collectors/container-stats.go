@@ -7,7 +7,7 @@ import (
 	"github.com/docker/distribution/context"
 	log "github.com/Sirupsen/logrus"
 	"time"
-_	"strings"
+	"strings"
 )
 
 var Host hostData
@@ -15,13 +15,14 @@ var Host hostData
 type ContainersBulkData struct {
 	ContData [] containerData
 	DataType string
+	CollectionTime time.Time
 }
 type containerData struct {
 	Id     string
 	Names  string
 	Image  string
 	Labels string
-	Ports  string
+	Ports  [] types.Port
 	Status string
 	Host   hostData
 }
@@ -54,16 +55,12 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 	info, _ := client.dc.Info(context.Background())
 
 	var contBulk ContainersBulkData
+	contBulk.DataType="container_monitor"
+	contBulk.CollectionTime=time.Now()
 
 	Host.SystemTyme = info.SystemTime
 	Host.TotalContainers = info.Containers
 	Host.RunningContainers = info.ContainersRunning
-/*	fmt.Printf("Hostname: %v \n", info.Name)
-	fmt.Printf("ContainersRunning: %v out of %v \n", info.ContainersRunning, info.Containers)
-	fmt.Printf("OperatingSystem: %v \n", info.OperatingSystem)
-	fmt.Printf("Memory Total in GB: %d \n", info.MemTotal / 1024 / 1024)
-	fmt.Printf("SystemTime: %v \n", info.SystemTime)
-	fmt.Printf("Docker version: %v \n", info.ServerVersion)*/
 
 	options := types.ContainerListOptions{All:false}
 	for {
@@ -82,9 +79,10 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 			var cont containerData
 			cont.Id = c.ID
 			cont.Image = c.Image
-//			cont.names = strings.Join(c.Names,",")
-//			cont.labels = strings.Join(c.Labels,",")
-//			cont.ports = strings.Join(c.Ports,",")
+			cont.Status = c.Status
+			cont.Names = strings.Join(c.Names,",")
+			cont.Labels = strings.Join(mapToArray(c.Labels),",")
+			cont.Ports = c.Ports
 			cont.Host = Host
 			contBulk.ContData = contBulk.addContainerData(cont)
 		}
@@ -94,3 +92,16 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 		time.Sleep(time.Duration(client.contListIntervalSec) * time.Second)
 	}
 }
+
+func mapToArray(m map[string]string) [] string  {
+
+	res := make([]string, 0)
+
+	for ind,val := range m {
+		res = append(res,ind+"="+val)
+	}
+
+	return res
+}
+
+

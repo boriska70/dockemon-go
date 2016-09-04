@@ -4,7 +4,6 @@ import (
 	elastic "gopkg.in/olivere/elastic.v3"
 	log "github.com/Sirupsen/logrus"
         "encoding/json"
-	"fmt"
 )
 
 var indexName = "dockermon"
@@ -31,12 +30,22 @@ func ReadAndSend(cli esClient, ch chan ContainersBulkData) {
 
 		data := <-ch
 
-		log.Info("Received %v", data)
+		log.Info("Received data: ", data)
 		bdata, _ := json.Marshal(data)
-		log.Info("Received json %s", string(bdata))
-		fmt.Println(string(bdata))
+		log.Info("Received json: ", string(bdata))
 
-		//cli.client.Index().Index(indexName).Type("extractfromdata").BodyString(data).Do()
+		cli.client.Index().Index(indexName).Type(fetchDataType(bdata)).BodyString(string(bdata)).Do()
 	}
+
+}
+
+func fetchDataType(bdata []byte) string {
+
+	var dat map[string]interface{}
+	if err := json.Unmarshal([]byte(bdata), &dat); err != nil {
+		panic(err)
+	}
+
+	return dat["DataType"].(string)
 
 }
