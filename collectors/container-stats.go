@@ -30,7 +30,6 @@ type hostData struct {
 	HostName          string
 	Os                string
 	MemoryTotalGB     int
-	SystemTyme        string
 	DockerVersion     string
 	TotalContainers   int
 	RunningContainers int
@@ -57,15 +56,14 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 	var contBulk ContainersBulkData
 	contBulk.DataType="container_monitor"
 
-	Host.SystemTyme = info.SystemTime
-	Host.TotalContainers = info.Containers
-	Host.RunningContainers = info.ContainersRunning
-
 	options := types.ContainerListOptions{All:false}
 	for {
 		fmt.Printf("CPU Usage: %v \n", types.CPUStats{}.CPUUsage)
 		fmt.Printf("Memory Usage: %v \n", types.MemoryStats{}.MaxUsage)
 		contBulk.CollectionTime=time.Now()
+		Host.TotalContainers = info.Containers
+		Host.RunningContainers = info.ContainersRunning
+
 		containers, err := client.dc.ContainerList(context.Background(), options)
 		if err != nil {
 			panic(err)

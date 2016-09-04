@@ -30,9 +30,9 @@ func ReadAndSend(cli esClient, ch chan ContainersBulkData) {
 
 		data := <-ch
 
-		log.Info("Received data: ", data)
+//		log.Info("Received data: ", data)
 		bdata, _ := json.Marshal(data)
-		log.Info("Received json: ", string(bdata))
+//		log.Info("Received json: ", string(bdata))
 
 		cli.client.Index().Index(indexName).Type(fetchDataType(bdata)).BodyString(string(bdata)).Do()
 	}
