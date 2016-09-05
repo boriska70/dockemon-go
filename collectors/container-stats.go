@@ -49,7 +49,7 @@ func (cbd *ContainersBulkData) addContainerData(cd containerData) [] containerDa
 }
 
 func ContainerStats(client doClient, ch chan ContainersBulkData) {
-	log.Println("Collectiong containers data...")
+	log.Println("Collecting containers data...")
 	log.Println(client.dc.Info(context.Background()))
 	info, _ := client.dc.Info(context.Background())
 
