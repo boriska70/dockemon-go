@@ -58,11 +58,12 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 
 	options := types.ContainerListOptions{All:false}
 	for {
-		fmt.Printf("CPU Usage: %v \n", types.CPUStats{}.CPUUsage)
-		fmt.Printf("Memory Usage: %v \n", types.MemoryStats{}.MaxUsage)
+		//fmt.Printf("CPU Usage: %v \n", types.CPUStats{}.CPUUsage)
+		//fmt.Printf("Memory Usage: %v \n", types.MemoryStats{}.MaxUsage)
 		contBulk.CollectionTime=time.Now()
 		Host.TotalContainers = info.Containers
 		Host.RunningContainers = info.ContainersRunning
+		log.Info("Found ",Host.TotalContainers," containers, of them running: ", Host.RunningContainers)
 
 		containers, err := client.dc.ContainerList(context.Background(), options)
 		if err != nil {
@@ -70,7 +71,7 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 		}
 
 		for _, c := range containers {
-			fmt.Println(c.ID, c.Names, c.Image, c.Labels, c.Ports, c.Status)
+			log.Debug("Container found: ",c.ID, c.Names, c.Image, c.Labels, c.Ports, c.Status)
 			//fmt.Println(c.ID, c.NetworkSettings.Networks, c.Names, c.Command, c.Created, c.Image, c.Labels, c.Ports, c.SizeRootFs, c.SizeRw, c.Status)
 			//fmt.Printf("HostConfig-NetworkNode is %v \n", c.HostConfig.NetworkMode)
 			//fmt.Printf("Networks: %v \n", c.NetworkSettings.Networks)
@@ -87,6 +88,7 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 		if len(contBulk.ContData) > 0 {
 			ch <- contBulk
 		}
+		fmt.Println("Going to sleep under the next collection")
 		time.Sleep(time.Duration(client.contListIntervalSec) * time.Second)
 	}
 }
