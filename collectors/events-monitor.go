@@ -5,37 +5,69 @@ import (
 	"github.com/docker/engine-api/types"
 	log "github.com/Sirupsen/logrus"
 	"fmt"
-_	"encoding/json"
+	"time"
+	"encoding/json"
 )
 
-func EventsCollect(client doClient) {
+type DockerEventPackage struct {
+	event dockerEvent
+	DataType string
+	CollectionTime time.Time
+}
+
+type dockerEvent struct {
+	id string
+	status string
+	from string
+	sourceType string
+	action string
+	actor actor
+	eventTime time.Time
+}
+
+type actor struct {
+	actorId string
+	attributes [] string
+}
+
+type AAA struct {
+	DockEvent string
+	DataType string
+	CollectionTime time.Time
+}
+
+
+func EventsCollect(client doClient, ch chan []byte) {
 
 	options := types.EventsOptions{}
-	b1 := make([]byte, 1024)
 
 	for {
-
+		b1 := make([]byte, 1024)
 		body, err := client.dc.Events(context.Background(), options)
 
 		if err != nil {
 			log.Error(err)
 		}
 
+		var event string
+
 		n1, err := body.Read(b1)
+		fmt.Println("Body length is ", n1)
+
+		json.NewDecoder(body).Decode(event)
+		fmt.Println("Event is ", string(b1[:n1]))
+
+/*		var aaa AAA
+		aaa.event =string(b1[1:n1-1])
+		aaa.CollectionTime = time.Now()
+		aaa.DataType="DockerEvent"*/
 
 
+				//if len(aaa.event) > 0 {
+					if len(b1) > 0 {
+					ch <- b1[:n1]
+				}
 
-		fmt.Printf("%d bytes: %s\n", n1, string(b1[:n1]))
-
-//		myjson,_ := json.Marshal(b1[:n1])
-		//fmt.Printf("%d bytes in JSON: %s\n", len(myjson), string(myjson))
-
-
-		log.Info("buffer: ", len(b1))
-		log.Info("body: ", n1)
-
-//		time.Sleep(1 * time.Second)
-		types.
 
 	}
 }

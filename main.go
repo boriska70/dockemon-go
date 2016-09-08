@@ -28,11 +28,13 @@ func main() {
 	log.Infof("Docker client created for %v", collectors.Host)
 	elasticclient := collectors.NewEsClient(*esurl);
 	log.Infof("Elastic? ", elasticclient)
-//	contChannel := make(chan collectors.ContainersBulkData)
-//	go collectors.ReadAndSend(elasticclient, contChannel)
-//	go collectors.ContainerStats(client, contChannel)
+	contChannel := make(chan collectors.ContainersBulkData)
+	eventChannel := make(chan []byte)
+	go collectors.ReadAndSend(elasticclient, contChannel)
+	go collectors.SendEvent(elasticclient, eventChannel)
+	go collectors.ContainerStats(client, contChannel)
 
-	go collectors.EventsCollect(client)
+	go collectors.EventsCollect(client, eventChannel)
 
 	//go client.Cl.StartMonitorEvents(client.EventCallBack, nil);
 	for {

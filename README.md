@@ -9,7 +9,9 @@
 ### Run in docker
   - Assuming that we link to elasticsearch running as another docker named es:
   `docker run --rm --name dmg --log-driver=json-file -v /var/run/docker.sock:/var/run/docker.sock --link es:es boriska70/dockermon-go -esurl=http://es:9200`
-
+  - Elasticsearch can be started as
+  `docker run -d --name es -p 9200:9200 -p 9300:9300 elasticsearch:2.3.4 elasticsearch -Des.network.host=0.0.0.0 -Des.network.bind_host=0.0.0.0 -Des.cluster.name=elasticlaster -Des.node.name=$(hostname)`
+  - Kibana run: docker run --link es:elasticsearch -d kibana
 
 Useful:
   - curl --unix-socket /var/run/docker.sock http:/containers/json (see https://docs.docker.com/engine/reference/api/docker_remote_api/ for details)
