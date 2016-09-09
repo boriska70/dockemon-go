@@ -29,7 +29,7 @@ func main() {
 	elasticclient := collectors.NewEsClient(*esurl);
 	log.Infof("Elastic? ", elasticclient)
 	contChannel := make(chan collectors.ContainersBulkData)
-	eventChannel := make(chan []byte)
+	eventChannel := make(chan collectors.DockerEvent)
 	go collectors.ReadAndSend(elasticclient, contChannel)
 	go collectors.SendEvent(elasticclient, eventChannel)
 	go collectors.ContainerStats(client, contChannel)

@@ -4,7 +4,6 @@ import (
 	elastic "gopkg.in/olivere/elastic.v3"
 	log "github.com/Sirupsen/logrus"
         "encoding/json"
-	"time"
 )
 
 var indexName = "dockermon"
@@ -41,23 +40,17 @@ func ReadAndSend(cli esClient, ch chan ContainersBulkData) {
 }
 
 
-func SendEvent(cli esClient, ch chan []byte) {
+func SendEvent(cli esClient, ch chan DockerEvent) {
 
 	for {
 
 		data := <-ch
 
-		log.Debug("Going to send event to ES: ", string(data))
+		log.Debug("Going to send event to ES: ", data)
 
-		var aaa AAA
+		eventstr,_ :=json.Marshal(data)
 
-		aaa.DockEvent = string(data)
-		aaa.DataType="DockerEvent2"
-		aaa.CollectionTime = time.Now()
-		bbb,_ := json.Marshal(aaa)
-				log.Info("Prepared json: ", string(bbb))
-
-		cli.client.Index().Index(indexName).Type(aaa.DataType).BodyString(string(bbb)).Do()
+		cli.client.Index().Index(indexName).Type(data.DataType).BodyString(string(eventstr)).Do()
 	}
 
 }

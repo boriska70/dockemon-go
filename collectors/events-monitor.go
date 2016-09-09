@@ -4,44 +4,41 @@ import (
 	"github.com/docker/distribution/context"
 	"github.com/docker/engine-api/types"
 	log "github.com/Sirupsen/logrus"
-	"fmt"
 	"time"
 	"encoding/json"
+	"bytes"
 )
 
-type DockerEventPackage struct {
-	event dockerEvent
+/*type DockerEventPackage struct {
+	Event    *DockerEvent
 	DataType string
+}*/
+
+type DockerEvent struct {
+	Id             string
+	Status         string
+	Action         string
+	From           string
+	Type           string
+	Actor          Actor
 	CollectionTime time.Time
-}
-
-type dockerEvent struct {
-	id string
-	status string
-	from string
-	sourceType string
-	action string
-	actor actor
-	eventTime time.Time
-}
-
-type actor struct {
-	actorId string
-	attributes [] string
-}
-
-type AAA struct {
-	DockEvent string
 	DataType string
-	CollectionTime time.Time
 }
 
+type Actor struct {
+	ID         string
+	Attributes map[string]string
+}
 
-func EventsCollect(client doClient, ch chan []byte) {
+func EventsCollect(client doClient, ch chan DockerEvent) {
 
 	options := types.EventsOptions{}
 
 	for {
+//		var dep DockerEvent
+		var de DockerEvent
+		//		var str string
+
 		b1 := make([]byte, 1024)
 		body, err := client.dc.Events(context.Background(), options)
 
@@ -49,25 +46,27 @@ func EventsCollect(client doClient, ch chan []byte) {
 			log.Error(err)
 		}
 
-		var event string
+		n1, _ := body.Read(b1)
+		log.Debug("Event body length is ", n1)
 
-		n1, err := body.Read(b1)
-		fmt.Println("Body length is ", n1)
+		//		str = string(b1[:n1])
+		//		fmt.Println("String: ", str)
+		dec := json.NewDecoder(bytes.NewReader(b1[:n1]))
+		dec.Decode(&de)
+		de.CollectionTime = time.Now()
+		//		fmt.Println(de.Action)
+		/*		destring, _ := json.Marshal(de)
+		fmt.Println("Decoded: ", string(destring))
+		fmt.Println("Done")*/
 
-		json.NewDecoder(body).Decode(event)
-		fmt.Println("Event is ", string(b1[:n1]))
+//		dep.Event = &de
+		de.DataType = "DockerEvent"
 
-/*		var aaa AAA
-		aaa.event =string(b1[1:n1-1])
-		aaa.CollectionTime = time.Now()
-		aaa.DataType="DockerEvent"*/
+		if len(de.Action) > 0 {
+			if len(b1) > 0 {
+				ch <- de
+			}
 
-
-				//if len(aaa.event) > 0 {
-					if len(b1) > 0 {
-					ch <- b1[:n1]
-				}
-
-
+		}
 	}
 }
