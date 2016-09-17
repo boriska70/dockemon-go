@@ -14,7 +14,8 @@
   - Kibana run: docker run --link es:elasticsearch -d kibana
 
 Useful:
-  - curl --unix-socket /var/run/docker.sock http:/containers/json (see https://docs.docker.com/engine/reference/api/docker_remote_api/ for details)
+  - Get containers: curl --unix-socket /var/run/docker.sock http:/containers/json (see https://docs.docker.com/engine/reference/api/docker_remote_api/ for details)
+  - Stream events: curl --unix-socket /var/run/docker.sock http://localhost/events (see https://docs.docker.com/engine/reference/api/docker_remote_api/ for details)
   - start/stop container events:
   `[
       {"status":"start","id":"405efae3b420464a9da7be7cd9de8d2ff160ffcfdac01517d9b686e8137f9053","from":"alpine","Type":"container","Action":"start","Actor":{"ID":"405efae3b420464a9da7be7cd9de8d2ff160ffcfdac01517d9b686e8137f9053","Attributes":{"image":"alpine","name":"alpine"}},"time":1473106693,"timeNano":1473106693262908400},

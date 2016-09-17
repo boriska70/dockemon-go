@@ -33,6 +33,7 @@ func main() {
 	go collectors.ReadAndSend(elasticclient, contChannel)
 	go collectors.SendEvent(elasticclient, eventChannel)
 	go collectors.ContainerStats(client, contChannel)
+	go collectors.ImageStats(client)
 
 	go collectors.EventsCollect(client, eventChannel)
 
