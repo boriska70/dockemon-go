@@ -30,11 +30,27 @@ func ReadAndSend(cli esClient, ch chan ContainersBulkData) {
 
 		data := <-ch
 
-		log.Debug("Going to send data to ES: ", data)
+		log.Debug("Going to send container data to ES: ", data)
 		bdata, _ := json.Marshal(data)
 //		log.Info("Received json: ", string(bdata))
 
 		cli.client.Index().Index(indexName).Type(fetchDataType(bdata)).BodyString(string(bdata)).Do()
+	}
+
+}
+
+
+func SendEvent(cli esClient, ch chan DockerEvent) {
+
+	for {
+
+		data := <-ch
+
+		log.Debug("Going to send event to ES: ", data)
+
+		eventstr,_ :=json.Marshal(data)
+
+		cli.client.Index().Index(indexName).Type(data.DataType).BodyString(string(eventstr)).Do()
 	}
 
 }
