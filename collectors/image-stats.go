@@ -1,13 +1,12 @@
 package collectors
 
-import "fmt"
-
 import (
 	"github.com/docker/engine-api/types"
 	"github.com/docker/distribution/context"
 	log "github.com/Sirupsen/logrus"
 	"time"
 	"strconv"
+	"strings"
 )
 
 var HostForImages hostImagesData
@@ -20,7 +19,7 @@ type ImageBulkData struct {
 }
 type imageData struct {
 	Id     string
-	Created  time.Time
+	Created  string
 	Labels string
 	ParentId string
 	RepoDigest string
@@ -29,7 +28,7 @@ type imageData struct {
 	Host hostImagesData
 }
 type hostImagesData struct {
-	Host                HostStaticData
+	Host   *HostStaticData
 	TotalLayers   int
 	TotalImages   int
 	TotalSizeMB   int64
@@ -41,7 +40,7 @@ func (ibd *ImageBulkData) addImageData(id imageData) [] imageData {
 	return ibd.ImgData
 }
 
-func ImageStats(client doClient) {
+func ImageStats(client doClient, ch chan ImageBulkData) {
 
 	HostForImages.Host = getHostStaticData()
 
@@ -49,12 +48,12 @@ func ImageStats(client doClient) {
 	log.Println(client.dc.Info(context.Background()))
 	info, _ := client.dc.Info(context.Background())
 
-	var contBulk ContainersBulkData
-	contBulk.DataType="image_monitor"
+	var imgBulk ImageBulkData
+	imgBulk.DataType="image_monitor"
 
 	options := types.ImageListOptions{All:false}	//not including intermediate images
 	for {
-		contBulk.CollectionTime=time.Now()
+		imgBulk.CollectionTime=time.Now()
 		HostForImages.TotalLayers = info.Images
 		log.Info("Found layers: ",HostForImages.TotalLayers)
 
@@ -62,29 +61,39 @@ func ImageStats(client doClient) {
 		if err != nil {
 			panic(err)
 		}
-		var imgTotalSize int64
+		var imgTotalSize int64 = 0
+		var imgTotalImages int = 0
+		for _, img := range images {
+			imgTotalImages++
+			imgTotalSize += img.Size
+		}
+		HostForImages.TotalImages = imgTotalImages
+		HostForImages.TotalSizeMB = imgTotalSize/1024/1024
 		for _, img := range images {
 			log.Debug("Image found: ",img.ID, img.Created, img.Labels, img.ParentID, img.RepoDigests, img.Size, img.VirtualSize)
-			imgTotalSize += img.Size
+
+			var image imageData
+			image.Id = img.ID
+			image.Created = time.Unix(img.Created, 0).UTC().Format(time.RFC3339)
+			image.Labels = strings.Join(MapToArray(img.Labels),",")
+			image.ParentId = img.ParentID
+			image.RepoDigest = strings.Join(img.RepoDigests,",")
+			image.Size = img.Size
+			image.VirtualSize = img.VirtualSize
+			image.Host = HostForImages
+			imgBulk.ImgData = imgBulk.addImageData(image)
 		}
 
 		log.Info("Found Images: ",len(images), " with total size: " + strconv.FormatInt(imgTotalSize/1024/1024,10) + " MB")
 
+		if len(imgBulk.ImgData) > 0 {
+			ch <- imgBulk
+		}
 
-		fmt.Println("Going to sleep under the next collection")
+
+		log.Debug("Image monitor is going to sleep under the next collection")
 		time.Sleep(time.Duration(client.contListIntervalSec) * time.Second)
 	}
-}
-
-func mapToArray2(m map[string]string) [] string  {
-
-	res := make([]string, 0)
-
-	for ind,val := range m {
-		res = append(res,ind+"="+val)
-	}
-
-	return res
 }
 
 

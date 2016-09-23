@@ -11,7 +11,7 @@ import (
 var timeLayout = "2006-01-02 15:04:05";
 
 func init() {
-	log.SetLevel(log.DebugLevel);
+	log.SetLevel(log.InfoLevel);
 }
 
 func main() {
@@ -24,17 +24,20 @@ func main() {
 	log.Infof("Start running dockermon-go at %v", time.Now().Format(timeLayout));
 
 	client := collectors.NewDockerClient(*cci)
-	collectors.SetConstantHostData(client)
+	collectors.SetHostStaticData(client)
 	log.Infof("Docker client created for %v", collectors.Host)
 	elasticclient := collectors.NewEsClient(*esurl);
 	log.Infof("Elastic? ", elasticclient)
 	contChannel := make(chan collectors.ContainersBulkData)
 	eventChannel := make(chan collectors.DockerEvent)
-	go collectors.ReadAndSend(elasticclient, contChannel)
-	go collectors.SendEvent(elasticclient, eventChannel)
-	go collectors.ContainerStats(client, contChannel)
-	go collectors.ImageStats(client)
+	imageChannel := make(chan collectors.ImageBulkData)
 
+	go collectors.ReadAndSendImageData(elasticclient, imageChannel)
+	go collectors.ReadAndSendContainerData(elasticclient, contChannel)
+	go collectors.SendEvent(elasticclient, eventChannel)
+
+	go collectors.ImageStats(client, imageChannel)
+	go collectors.ContainerStats(client, contChannel)
 	go collectors.EventsCollect(client, eventChannel)
 
 	//go client.Cl.StartMonitorEvents(client.EventCallBack, nil);

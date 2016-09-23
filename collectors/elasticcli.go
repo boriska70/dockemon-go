@@ -24,7 +24,7 @@ func NewEsClient(url string) esClient {
 	return esClient{client}
 }
 
-func ReadAndSend(cli esClient, ch chan ContainersBulkData) {
+func ReadAndSendContainerData(cli esClient, ch chan ContainersBulkData) {
 
 	for {
 
@@ -34,9 +34,27 @@ func ReadAndSend(cli esClient, ch chan ContainersBulkData) {
 		bdata, _ := json.Marshal(data)
 //		log.Info("Received json: ", string(bdata))
 
-		cli.client.Index().Index(indexName).Type(fetchDataType(bdata)).BodyString(string(bdata)).Do()
+		_, err :=cli.client.Index().Index(indexName).Type(fetchDataType(bdata)).BodyString(string(bdata)).Do()
+		if err != nil {
+			log.Error("Problem when sending container data: ", err)
+		}
 	}
 
+}
+
+func ReadAndSendImageData(cli esClient, ch chan ImageBulkData) {
+
+	for {
+
+		data := <-ch
+		log.Debug("Going to send image data to ES: ", data)
+		bdata,_ := json.Marshal(data)
+
+		_, err :=cli.client.Index().Index(indexName).Type(fetchDataType(bdata)).BodyString(string(bdata)).Do()
+		if err != nil {
+			log.Error("Problem when sending container data: ", err)
+		}
+	}
 }
 
 

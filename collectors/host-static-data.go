@@ -19,6 +19,6 @@ func SetHostStaticData(client doClient)  {
 	Host.DockerVersion = info.ServerVersion
 }
 
-func getHostStaticData() HostStaticData {
+func getHostStaticData() *HostStaticData {
 	return &Host
 }

@@ -1,6 +1,5 @@
 package collectors
 
-import "fmt"
 
 import (
 	"github.com/docker/engine-api/types"
@@ -10,7 +9,7 @@ import (
 	"strings"
 )
 
-var Host hostData
+var HostForContainers hostData
 
 type ContainersBulkData struct {
 	ContData [] containerData
@@ -27,20 +26,9 @@ type containerData struct {
 	Host   hostData
 }
 type hostData struct {
-	HostName          string
-	Os                string
-	MemoryTotalGB     int
-	DockerVersion     string
-	TotalContainers   int
+	Host *HostStaticData
+	TotalContainers int
 	RunningContainers int
-}
-
-func SetConstantHostData(client doClient)  {
-	info, _ := client.dc.Info(context.Background())
-	Host.HostName = info.Name
-	Host.Os = info.OperatingSystem
-	Host.MemoryTotalGB = int (info.MemTotal / 1024 / 1024)
-	Host.DockerVersion = info.ServerVersion
 }
 
 func (cbd *ContainersBulkData) addContainerData(cd containerData) [] containerData {
@@ -53,17 +41,17 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 	log.Println(client.dc.Info(context.Background()))
 	info, _ := client.dc.Info(context.Background())
 
+	HostForContainers.Host = getHostStaticData()
+	HostForContainers.TotalContainers = info.Containers
+	HostForContainers.RunningContainers = info.ContainersRunning
+	log.Info("Found ",HostForContainers.TotalContainers," containers, of them running: ", HostForContainers.RunningContainers)
+
 	var contBulk ContainersBulkData
 	contBulk.DataType="container_monitor"
+	contBulk.CollectionTime=time.Now()
 
 	options := types.ContainerListOptions{All:false}
 	for {
-		//fmt.Printf("CPU Usage: %v \n", types.CPUStats{}.CPUUsage)
-		//fmt.Printf("Memory Usage: %v \n", types.MemoryStats{}.MaxUsage)
-		contBulk.CollectionTime=time.Now()
-		Host.TotalContainers = info.Containers
-		Host.RunningContainers = info.ContainersRunning
-		log.Info("Found ",Host.TotalContainers," containers, of them running: ", Host.RunningContainers)
 
 		containers, err := client.dc.ContainerList(context.Background(), options)
 		if err != nil {
@@ -80,28 +68,15 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 			cont.Image = c.Image
 			cont.Status = c.Status
 			cont.Names = strings.Join(c.Names,",")
-			cont.Labels = strings.Join(mapToArray(c.Labels),",")
+			cont.Labels = strings.Join(MapToArray(c.Labels),",")
 			cont.Ports = c.Ports
-			cont.Host = Host
+			cont.Host = HostForContainers
 			contBulk.ContData = contBulk.addContainerData(cont)
 		}
 		if len(contBulk.ContData) > 0 {
 			ch <- contBulk
 		}
-		fmt.Println("Going to sleep under the next collection")
+		log.Debug("Container monitor is going to sleep under the next collection")
 		time.Sleep(time.Duration(client.contListIntervalSec) * time.Second)
 	}
 }
-
-func mapToArray(m map[string]string) [] string  {
-
-	res := make([]string, 0)
-
-	for ind,val := range m {
-		res = append(res,ind+"="+val)
-	}
-
-	return res
-}
-
-
