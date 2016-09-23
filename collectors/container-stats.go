@@ -42,9 +42,6 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 	info, _ := client.dc.Info(context.Background())
 
 	HostForContainers.Host = getHostStaticData()
-	HostForContainers.TotalContainers = info.Containers
-	HostForContainers.RunningContainers = info.ContainersRunning
-	log.Info("Found ",HostForContainers.TotalContainers," containers, of them running: ", HostForContainers.RunningContainers)
 
 	var contBulk ContainersBulkData
 	contBulk.DataType="container_monitor"
@@ -52,6 +49,10 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 	options := types.ContainerListOptions{All:false}
 	for {
 		contBulk.CollectionTime=time.Now()
+		HostForContainers.TotalContainers = info.Containers
+		HostForContainers.RunningContainers = info.ContainersRunning
+		log.Info("Found ",HostForContainers.TotalContainers," containers, of them running: ", HostForContainers.RunningContainers)
+
 		containers, err := client.dc.ContainerList(context.Background(), options)
 		if err != nil {
 			panic(err)
