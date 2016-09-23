@@ -48,11 +48,10 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 
 	var contBulk ContainersBulkData
 	contBulk.DataType="container_monitor"
-	contBulk.CollectionTime=time.Now()
 
 	options := types.ContainerListOptions{All:false}
 	for {
-
+		contBulk.CollectionTime=time.Now()
 		containers, err := client.dc.ContainerList(context.Background(), options)
 		if err != nil {
 			panic(err)
