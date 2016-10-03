@@ -10,7 +10,7 @@ dependencies:
     - docker build -t boriska70/dockermon-builder -f Dockerfile.build .
     - docker run -t --name=dockermon-builder boriska70/dockermon-builder
     - mkdir .dist
-    - docker cp  dockermon-build:/go/src/github.com/boriska70/dockermon-go/.dist/dockermon ./.dist/
+    - docker cp  dockermon-builder:/go/src/github.com/boriska70/dockermon-go/.dist/dockermon ./.dist/
     - docker build -t boriska70/dockermon .
     - docker tag boriska70/dockermon boriska70/dockermon:$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
     - docker tag boriska70/dockermon boriska70/dockermon:$CIRCLE_BRANCH
