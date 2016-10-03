@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/boriska70/dockermon-go.svg?style=svg)](https://circleci.com/gh/boriska70/dockermon-go)
+
 # dockermon-go
 
 

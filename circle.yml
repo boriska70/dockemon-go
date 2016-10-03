@@ -6,8 +6,8 @@ machine:
     - docker
 dependencies:
   override:
-    - docker build -it boriska70/dockermon-builder -f Dockerfile.build .
-    - docker run -it --name=dockermon-builder boriska70/dockermon-builder
+    - docker build -t boriska70/dockermon-builder -f Dockerfile.build .
+    - docker run -t --name=dockermon-builder boriska70/dockermon-builder
     - mkdir .dist
     - docker cp  dockermon-build:/go/src/github.com/boriska70/dockermon-go/.dist/dockermon ./.dist/
     - docker build -t boriska70/dockermon .
