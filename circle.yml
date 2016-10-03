@@ -1,0 +1,29 @@
+machine:
+  pre:
+    - sudo curl -L -o /usr/bin/docker 'https://s3-external-1.amazonaws.com/circle-downloads/docker-1.9.1-circleci'
+    - sudo chmod 0755 /usr/bin/docker
+  services:
+    - docker
+dependencies:
+  override:
+    - docker build -it boriska70/dockermon-builder -f Dockerfile.build .
+    - docker run -it --name=dockermon-builder boriska70/dockermon-builder
+    - mkdir .dist
+    - docker cp  dockermon-build:/go/src/github.com/boriska70/dockermon-go/.dist/dockermon ./.dist/
+    - docker build -t boriska70/dockermon .
+    - docker tag boriska70/dockermon boriska70/dockermon:$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
+    - docker tag boriska70/dockermon boriska70/dockermon:$CIRCLE_BRANCH
+test:
+  override:
+    # run tugbot tests and generate junit.xml reports
+    - docker run --rm --name dmg -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockermon-go env
+deployment:
+  continuous:
+    branch: [master, develop, /feature_.*/]
+    commands:
+      # deply image to DockerHub
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push boriska70/dockermon
+general:
+  artifacts:
+    - .dist
