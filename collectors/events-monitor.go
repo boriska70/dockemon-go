@@ -7,7 +7,6 @@ import (
 	"time"
 	"encoding/json"
 	"bytes"
-	"fmt"
 )
 
 type DockerEvent struct {
