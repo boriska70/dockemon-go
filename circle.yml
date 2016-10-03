@@ -17,7 +17,7 @@ dependencies:
 test:
   override:
     # run tugbot tests and generate junit.xml reports
-    - docker run --rm --name dmg -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockermon-go env
+    - docker run --rm --name dmg -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockermon env
 deployment:
   continuous:
     branch: [master, develop, /feature_.*/]
