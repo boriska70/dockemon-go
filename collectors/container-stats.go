@@ -37,17 +37,18 @@ func (cbd *ContainersBulkData) addContainerData(cd containerData) [] containerDa
 }
 
 func ContainerStats(client doClient, ch chan ContainersBulkData) {
+
 	log.Println("Collecting containers data...")
-	log.Println(client.dc.Info(context.Background()))
-	info, _ := client.dc.Info(context.Background())
-
-	HostForContainers.Host = getHostStaticData()
-
 	var contBulk ContainersBulkData
 	contBulk.DataType="container_monitor"
 
-	options := types.ContainerListOptions{All:false}
+	HostForContainers.Host = getHostStaticData()
+
+
 	for {
+		info, _ := client.dc.Info(context.Background())
+		options := types.ContainerListOptions{All:false}
+
 		contBulk.CollectionTime=time.Now()
 		HostForContainers.TotalContainers = info.Containers
 		HostForContainers.RunningContainers = info.ContainersRunning
@@ -60,9 +61,6 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 
 		for _, c := range containers {
 			log.Debug("Container found: ",c.ID, c.Names, c.Image, c.Labels, c.Ports, c.Status)
-			//fmt.Println(c.ID, c.NetworkSettings.Networks, c.Names, c.Command, c.Created, c.Image, c.Labels, c.Ports, c.SizeRootFs, c.SizeRw, c.Status)
-			//fmt.Printf("HostConfig-NetworkNode is %v \n", c.HostConfig.NetworkMode)
-			//fmt.Printf("Networks: %v \n", c.NetworkSettings.Networks)
 			var cont containerData
 			cont.Id = c.ID
 			cont.Image = c.Image

@@ -2,16 +2,18 @@
 
 
 ### Build
-  - Prepare image for building. Run with **--build-arg http_proxy**, when running behind proxy, assuming that http_proxy and https_proxy environment variables are set. For example, `docker build -t boriska70/dockermon -f Dockerfile.build --build-arg http_proxy=http://1.2.3.4:5678 --build-arg https_proxy=http://1.2.3.4:5678 .`
-  - Build the project: `docker run --rm -v "$PWD":/go/src/github.com/boriska70/dockermon-go boriska70/dockermon script/go_build.sh`
-  - Create docker runtime image: `docker build -t boriska70/dockermon-go .`
+ - docker build -t boriska70/dockermon-build -f Dockerfile.build .
+ - docker run -it --name=dockermon-build boriska70/dockermon-build
+ - mkdir .dist
+ - docker cp  dockermon-build:/go/src/github.com/boriska70/dockermon-go/.dist/dockermon ./.dist/
+ - docker build -t boriska70/dockermon .
 
 ### Run in docker
   - Assuming that we link to elasticsearch running as another docker named es:
   `docker run --rm --name dmg --log-driver=json-file -v /var/run/docker.sock:/var/run/docker.sock --link es:es boriska70/dockermon-go -esurl=http://es:9200`
   - Elasticsearch can be started as
-  `docker run -d --name es -p 9200:9200 -p 9300:9300 elasticsearch:2.3.4 elasticsearch -Des.network.host=0.0.0.0 -Des.network.bind_host=0.0.0.0 -Des.cluster.name=elasticlaster -Des.node.name=$(hostname)`
-  - Kibana run: docker run --link es:elasticsearch -d kibana
+  `docker run -d --name es -p 9200:9200 -p 9300:9300 elasticsearch elasticsearch -Des.network.host=0.0.0.0 -Des.network.bind_host=0.0.0.0 -Des.cluster.name=elasticlaster -Des.node.name=$(hostname)`
+  - Kibana run: docker run --link es:elasticsearch -d -p5601:5601 --name kibana kibana
 
 Useful:
   - Get containers: curl --unix-socket /var/run/docker.sock http:/containers/json (see https://docs.docker.com/engine/reference/api/docker_remote_api/ for details)

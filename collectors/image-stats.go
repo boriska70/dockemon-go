@@ -42,17 +42,16 @@ func (ibd *ImageBulkData) addImageData(id imageData) [] imageData {
 
 func ImageStats(client doClient, ch chan ImageBulkData) {
 
-	HostForImages.Host = getHostStaticData()
-
 	log.Println("Collecting images data...")
-	log.Println(client.dc.Info(context.Background()))
-	info, _ := client.dc.Info(context.Background())
-
 	var imgBulk ImageBulkData
 	imgBulk.DataType="image_monitor"
 
-	options := types.ImageListOptions{All:false}	//not including intermediate images
+	HostForImages.Host = getHostStaticData()
+
 	for {
+		info, _ := client.dc.Info(context.Background())
+		options := types.ImageListOptions{All:false}	//not including intermediate images
+
 		imgBulk.CollectionTime=time.Now()
 		HostForImages.TotalLayers = info.Images
 		log.Info("Found layers: ",HostForImages.TotalLayers)

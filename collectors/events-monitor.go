@@ -7,12 +7,8 @@ import (
 	"time"
 	"encoding/json"
 	"bytes"
+	"fmt"
 )
-
-/*type DockerEventPackage struct {
-	Event    *DockerEvent
-	DataType string
-}*/
 
 type DockerEvent struct {
 	Id             string
@@ -35,9 +31,7 @@ func EventsCollect(client doClient, ch chan DockerEvent) {
 	options := types.EventsOptions{}
 
 	for {
-//		var dep DockerEvent
 		var de DockerEvent
-		//		var str string
 
 		b1 := make([]byte, 1024)
 		body, err := client.dc.Events(context.Background(), options)
@@ -49,17 +43,10 @@ func EventsCollect(client doClient, ch chan DockerEvent) {
 		n1, _ := body.Read(b1)
 		log.Debug("Event body length is ", n1)
 
-		//		str = string(b1[:n1])
-		//		fmt.Println("String: ", str)
 		dec := json.NewDecoder(bytes.NewReader(b1[:n1]))
 		dec.Decode(&de)
 		de.CollectionTime = time.Now()
-		//		fmt.Println(de.Action)
-		/*		destring, _ := json.Marshal(de)
-		fmt.Println("Decoded: ", string(destring))
-		fmt.Println("Done")*/
 
-//		dep.Event = &de
 		de.DataType = "DockerEvent"
 
 		if len(de.Action) > 0 {
