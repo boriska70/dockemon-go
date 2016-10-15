@@ -32,7 +32,6 @@ func ReadAndSendContainerData(cli esClient, ch chan ContainersBulkData) {
 
 		log.Debug("Going to send container data to ES: ", data)
 		bdata, _ := json.Marshal(data)
-//		log.Info("Received json: ", string(bdata))
 
 		_, err :=cli.client.Index().Index(indexName).Type(fetchDataType(bdata)).BodyString(string(bdata)).Do()
 		if err != nil {

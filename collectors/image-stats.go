@@ -1,12 +1,12 @@
 package collectors
 
 import (
-	"github.com/docker/engine-api/types"
-	"github.com/docker/distribution/context"
+	"github.com/docker/docker/api/types"
 	log "github.com/Sirupsen/logrus"
 	"time"
 	"strconv"
 	"strings"
+	"context"
 )
 
 var HostForImages hostImagesData

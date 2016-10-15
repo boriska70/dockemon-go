@@ -1,6 +1,6 @@
 package collectors
 
-import "github.com/docker/distribution/context"
+import "context"
 
 var Host HostStaticData
 

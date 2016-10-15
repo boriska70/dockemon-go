@@ -1,7 +1,7 @@
 package collectors
 
 import (
-	"github.com/docker/engine-api/client"
+	"github.com/docker/docker/client"
 )
 
 type doClient struct {

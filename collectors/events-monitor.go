@@ -1,12 +1,13 @@
 package collectors
 
 import (
-	"github.com/docker/distribution/context"
-	"github.com/docker/engine-api/types"
+	"github.com/docker/docker/api/types"
 	log "github.com/Sirupsen/logrus"
 	"time"
-	"encoding/json"
-	"bytes"
+	"context"
+	"io"
+	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/events"
 )
 
 type DockerEvent struct {
@@ -27,32 +28,45 @@ type Actor struct {
 
 func EventsCollect(client doClient, ch chan DockerEvent) {
 
-	options := types.EventsOptions{}
+	filters := filters.NewArgs()
+	filters.Add("container-events", events.ContainerEventType)
+	filters.Add("image-events", events.ImageEventType)
+	options := types.EventsOptions{
+		Filters: filters,
+	}
 
 	for {
-		var de DockerEvent
 
-		b1 := make([]byte, 1024)
-		body, err := client.dc.Events(context.Background(), options)
 
-		if err != nil {
-			log.Error(err)
-		}
+		//b1 := make([]byte, 1024)
+		messages, errs := client.dc.Events(context.Background(), options)
 
-		n1, _ := body.Read(b1)
-		log.Debug("Event body length is ", n1)
+		loop:
+		for {
+			select {
+			case err := <-errs:
+				if err != nil && err != io.EOF {
+					log.Fatal(err)
+				}
 
-		dec := json.NewDecoder(bytes.NewReader(b1[:n1]))
-		dec.Decode(&de)
-		de.CollectionTime = time.Now()
-
-		de.DataType = "DockerEvent"
-
-		if len(de.Action) > 0 {
-			if len(b1) > 0 {
-				ch <- de
+				break loop
+			case e := <-messages:
+				log.Info(e.ID, e.Action, e.Status, e.Type)
+			var de DockerEvent
+				de.DataType = "DockerEvent"
+				de.CollectionTime = time.Now()
+				de.Type = e.Type
+				de.Action = e.Action
+				de.Status = e.Status
+				de.Id = e.ID
+				de.From = e.From
+				de.Actor.ID = e.Actor.ID
+			de.Actor.Attributes = e.Actor.Attributes
+				if len(de.Action) > 0 {
+					ch <-de
+				}
 			}
-
 		}
+
 	}
 }

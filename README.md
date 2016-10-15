@@ -4,10 +4,10 @@
 
 
 ### Build
- - docker build -t boriska70/dockermon-build -f Dockerfile.build .
- - docker run -it --name=dockermon-build boriska70/dockermon-build
+ - docker build -t boriska70/dockermon-builder -f Dockerfile.build .
+ - docker run -it --name=dockermon-builder boriska70/dockermon-builder
  - mkdir .dist
- - docker cp  dockermon-build:/go/src/github.com/boriska70/dockermon-go/.dist/dockermon ./.dist/
+ - docker cp  dockermon-builder:/go/src/github.com/boriska70/dockermon-go/.dist/dockermon ./.dist/
  - docker build -t boriska70/dockermon .
 
 ### Run in docker
