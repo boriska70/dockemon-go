@@ -1,13 +1,10 @@
 package: github.com/boriska70/dockermon-go
 import:
 - package: github.com/Sirupsen/logrus
-  version: v0.10.0
 - package: github.com/docker/docker
-  version: v1.12.2-rc1
   subpackages:
   - api/types
   - api/types/events
   - api/types/filters
   - client
 - package: gopkg.in/olivere/elastic.v3
-  version: v3.0.55
