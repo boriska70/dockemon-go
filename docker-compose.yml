@@ -1,0 +1,25 @@
+version: '2'
+services:
+  elastic:
+    image: elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    command: [elasticsearch, -Des.network.host=0.0.0.0, -Des.network.bind_host=0.0.0.0, -Des.cluster.name=elasticlaster]
+  kibana:
+    image: kibana
+    links:
+      - elastic:elasticsearch
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elastic
+  dockermon:
+    image: boriska70/dockermon
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    links:
+      - elastic
+    depends_on:
+      - elastic
+    command: "/usr/bin/dockermon -esurl=http://elastic:9200 -cci=300"
