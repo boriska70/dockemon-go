@@ -15,6 +15,9 @@ type ContainersBulkData struct {
 	ContData [] containerData
 	DataType string
 	CollectionTime time.Time
+	Host   hostData
+	TotalContainers int
+	RunningContainers int
 }
 type containerData struct {
 	Id     string
@@ -23,12 +26,9 @@ type containerData struct {
 	Labels string
 	Ports  [] types.Port
 	Status string
-	Host   hostData
 }
 type hostData struct {
 	Host *HostStaticData
-	TotalContainers int
-	RunningContainers int
 }
 
 func (cbd *ContainersBulkData) addContainerData(cd containerData) [] containerData {
@@ -50,9 +50,9 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 		options := types.ContainerListOptions{All:false}
 
 		contBulk.CollectionTime=time.Now()
-		HostForContainers.TotalContainers = info.Containers
-		HostForContainers.RunningContainers = info.ContainersRunning
-		log.Info("Found ",HostForContainers.TotalContainers," containers, of them running: ", HostForContainers.RunningContainers)
+		contBulk.TotalContainers = info.Containers
+		contBulk.RunningContainers = info.ContainersRunning
+		log.Info("Found ",contBulk.TotalContainers," containers, of them running: ", contBulk.RunningContainers)
 
 		containers, err := client.dc.ContainerList(context.Background(), options)
 		if err != nil {
@@ -68,7 +68,7 @@ func ContainerStats(client doClient, ch chan ContainersBulkData) {
 			cont.Names = strings.Join(c.Names,",")
 			cont.Labels = strings.Join(MapToArray(c.Labels),",")
 			cont.Ports = c.Ports
-			cont.Host = HostForContainers
+			contBulk.Host = HostForContainers
 			contBulk.ContData = contBulk.addContainerData(cont)
 		}
 		if len(contBulk.ContData) > 0 {

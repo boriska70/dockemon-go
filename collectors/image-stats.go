@@ -16,6 +16,9 @@ type ImageBulkData struct {
 	ImgData [] imageData
 	DataType string
 	CollectionTime time.Time
+	TotalLayers   int
+	TotalImages   int
+	TotalSizeMB   int64
 }
 type imageData struct {
 	Id     string
@@ -29,9 +32,6 @@ type imageData struct {
 }
 type hostImagesData struct {
 	Host   *HostStaticData
-	TotalLayers   int
-	TotalImages   int
-	TotalSizeMB   int64
 }
 
 
@@ -53,8 +53,8 @@ func ImageStats(client doClient, ch chan ImageBulkData) {
 		options := types.ImageListOptions{All:false}	//not including intermediate images
 
 		imgBulk.CollectionTime=time.Now()
-		HostForImages.TotalLayers = info.Images
-		log.Info("Found layers: ",HostForImages.TotalLayers)
+		imgBulk.TotalLayers = info.Images
+		log.Info("Found layers: ",imgBulk.TotalLayers)
 
 		images, err := client.dc.ImageList(context.Background(), options)
 		if err != nil {
@@ -66,8 +66,8 @@ func ImageStats(client doClient, ch chan ImageBulkData) {
 			imgTotalImages++
 			imgTotalSize += img.Size
 		}
-		HostForImages.TotalImages = imgTotalImages
-		HostForImages.TotalSizeMB = imgTotalSize/1024/1024
+		imgBulk.TotalImages = imgTotalImages
+		imgBulk.TotalSizeMB = imgTotalSize/1024/1024
 		for _, img := range images {
 			log.Debug("Image found: ",img.ID, img.Created, img.Labels, img.ParentID, img.RepoDigests, img.Size, img.VirtualSize)
 
