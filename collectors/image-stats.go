@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-// Host on which images are been monitored
+// HostForImages variable keeps host level data for the host on which images are been monitored.
 var HostForImages hostImagesData
 
-// Data type that keeps image related data for all images in the given host
+// ImageBulkData type keeps image related data for all images in the given host.
 type ImageBulkData struct {
 	ImgData        []imageData
 	DataType       string
@@ -40,7 +40,7 @@ func (ibd *ImageBulkData) addImageData(id imageData) []imageData {
 	return ibd.ImgData
 }
 
-// Endless loop to collect image related data
+// ImageStats is the endless loop to collect image related data.
 func ImageStats(client doClient, ch chan ImageBulkData) {
 
 	log.Println("Collecting images data...")

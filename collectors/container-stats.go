@@ -8,10 +8,10 @@ import (
 	"time"
 )
 
-// Host on which containers are been monitored
+// HostForContainers variable keeps the host level data for the host on which containers are been monitored.
 var HostForContainers hostData
 
-// Data type that keeps container related data for all containers in the given host
+// ContainersBulkData type keeps container related data for all containers in the given host.
 type ContainersBulkData struct {
 	ContData          []containerData
 	DataType          string
@@ -37,7 +37,7 @@ func (cbd *ContainersBulkData) addContainerData(cd containerData) []containerDat
 	return cbd.ContData
 }
 
-// Endless loop to collect container related data
+// ContainerStats is the endless loop to collect container related data
 func ContainerStats(client doClient, ch chan ContainersBulkData) {
 
 	log.Println("Collecting containers data...")

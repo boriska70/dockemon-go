@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/boriska70/dockermon-go.svg?style=svg)](https://circleci.com/gh/boriska70/dockermon-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/boriska70/dockermon-go)](https://goreportcard.com/report/github.com/boriska70/dockermon-go)
 [![](https://badge.imagelayers.io/boriska70/dockermon:latest.svg)](https://imagelayers.io/?images=boriska70/dockermon:latest 'Get your own badge on imagelayers.io')
 
 # dockermon-go

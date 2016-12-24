@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// Standard docker event
+// DockerEvent type represents a standard docker event.
 type DockerEvent struct {
 	Id             string
 	Action         string
@@ -21,13 +21,13 @@ type DockerEvent struct {
 	DataType       string
 }
 
-// Actor parameter of the docker event
+// Actor type represents the Actor section of the docker event.
 type Actor struct {
 	ID         string
 	Attributes map[string]string
 }
 
-// Catch image and container docker events and push them to data channel for further sending to storage by the relevant client
+// EventsCollect catches an image or container docker events and push them to data channel for further sending to storage by the relevant client.
 func EventsCollect(client doClient, ch chan DockerEvent) {
 
 	eventFilters := filters.NewArgs()
@@ -38,8 +38,6 @@ func EventsCollect(client doClient, ch chan DockerEvent) {
 	}
 
 	for {
-
-		//b1 := make([]byte, 1024)
 		messages, errs := client.dc.Events(context.Background(), options)
 
 	loop:

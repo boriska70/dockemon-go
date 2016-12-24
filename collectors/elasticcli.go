@@ -12,7 +12,7 @@ type esClient struct {
 	client *elastic.Client
 }
 
-// Create the Elasticsearch client to publish all the data collected
+// NewEsClient creates the Elasticsearch client to publish all the data collected.
 func NewEsClient(url string) esClient {
 	log.Infof("Going to create Elasticsearch client with %v", url)
 	client, err := elastic.NewSimpleClient(elastic.SetURL(url))
@@ -24,7 +24,7 @@ func NewEsClient(url string) esClient {
 	return esClient{client}
 }
 
-// Send container monitor data to Elasticsearch
+// ReadAndSendContainerData sends container monitor data to Elasticsearch.
 func ReadAndSendContainerData(cli esClient, ch chan ContainersBulkData) {
 
 	for {
@@ -42,7 +42,7 @@ func ReadAndSendContainerData(cli esClient, ch chan ContainersBulkData) {
 
 }
 
-// Send image monitor data to Elasticsearch
+// ReadAndSendImageData sends image monitor data to Elasticsearch.
 func ReadAndSendImageData(cli esClient, ch chan ImageBulkData) {
 
 	for {
@@ -58,7 +58,7 @@ func ReadAndSendImageData(cli esClient, ch chan ImageBulkData) {
 	}
 }
 
-// Send docker events to Elasticsearch
+// SendEvent sends docker events to Elasticsearch.
 func SendEvent(cli esClient, ch chan DockerEvent) {
 
 	for {

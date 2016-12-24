@@ -1,6 +1,6 @@
 package collectors
 
-// Auxiliary method to create array from maps (for example for image or container labels)
+// MapToArray is an auxiliary method to create array from maps (for example for image or container labels).
 func MapToArray(m map[string]string) []string {
 
 	res := make([]string, 0)

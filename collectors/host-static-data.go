@@ -2,10 +2,10 @@ package collectors
 
 import "context"
 
-// Host on which the dockermon-go is running
+// Host variable keeps static data for the host on which the dockermon-go is running.
 var Host HostStaticData
 
-// Static host data that does not change overtime for the given host
+// HostStaticData type keeps data that does not change overtime for the given host.
 type HostStaticData struct {
 	HostName      string
 	Os            string
@@ -13,7 +13,7 @@ type HostStaticData struct {
 	DockerVersion string
 }
 
-// Static host data setter
+// SetHostStaticData sets static host data.
 func SetHostStaticData(client doClient) {
 	info, _ := client.dc.Info(context.Background())
 	Host.HostName = info.Name
