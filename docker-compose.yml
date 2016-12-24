@@ -22,4 +22,4 @@ services:
       - elastic
     depends_on:
       - elastic
-    command: "/usr/bin/dockermon -esurl=http://elastic:9200 -cci=300"
+    command: "/usr/bin/dockermon -esurl=http://elastic:9200 -dci=300"

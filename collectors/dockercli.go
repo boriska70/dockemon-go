@@ -9,12 +9,12 @@ type doClient struct {
 	contListIntervalSec int64
 }
 
-func NewDockerClient(cci int64) doClient {
+// Create new docker API client based on the environment variables
+func NewDockerClient(dci int64) doClient {
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
 	} else {
-		return doClient{dc:cli, contListIntervalSec:cci}
+		return doClient{dc: cli, contListIntervalSec: dci}
 	}
 }
-
