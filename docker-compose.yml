@@ -1,13 +1,13 @@
 version: '2'
 services:
   elastic:
-    image: elasticsearch
+    image: elasticsearch:5.1.1
     ports:
       - "9200:9200"
       - "9300:9300"
-    command: [elasticsearch, -Des.network.host=0.0.0.0, -Des.network.bind_host=0.0.0.0, -Des.cluster.name=elasticlaster]
+    command: [elasticsearch, -Enetwork.host=0.0.0.0, -Enetwork.bind_host=0.0.0.0, -Ecluster.name=elasticlaster]
   kibana:
-    image: kibana
+    image: kibana:5.1.1
     links:
       - elastic:elasticsearch
     ports:
