@@ -61,8 +61,8 @@ func ImageStats(client doClient, ch chan ImageBulkData) {
 		if err != nil {
 			panic(err)
 		}
-		var imgTotalSize int64 = 0
-		var imgTotalImages int = 0
+		var imgTotalSize int64
+		var imgTotalImages int
 		for _, img := range images {
 			imgTotalImages++
 			imgTotalSize += img.Size
