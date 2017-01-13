@@ -17,6 +17,8 @@ checkout:
 dependencies:
   override:
     - docker build -t boriska70/dockemon-builder -f Dockerfile.build .
+    - docker run -t --rm boriska70/dockemon-builder echo $PWD
+    - docker run -t --rm boriska70/dockemon-builder ls -la
     - docker run -t --name=dockemon-builder -v "$PWD/dockemon-go":$PROJECT_PATH -w $PROJECT_PATH boriska70/dockemon-builder
     - mkdir .dist
     - docker cp  dockemon-builder:/go/src/github.com/boriska70/dockemon-go/.dist/dockemon .dist/
