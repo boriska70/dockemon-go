@@ -5,7 +5,7 @@ import (
 
 	"flag"
 	log "github.com/Sirupsen/logrus"
-	"github.com/boriska70/dockermon-go/collectors"
+	"github.com/boriska70/dockemon-go/collectors"
 )
 
 var timeLayout = "2006-01-02 15:04:05"
@@ -19,7 +19,7 @@ func main() {
 	esurl := flag.String("esurl", "http://localhost:9200", "Elasticsearch URL")
 	flag.Parse()
 
-	log.Infof("Start running dockermon-go at %v", time.Now().Format(timeLayout))
+	log.Infof("Start running dockemon-go at %v", time.Now().Format(timeLayout))
 	defer log.Infof("Data collection is successfully started; data is sent to %v with interval %v seconds", esurl, dci)
 
 	client := collectors.NewDockerClient(*dci)

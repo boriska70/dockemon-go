@@ -1,20 +1,20 @@
-[![CircleCI](https://circleci.com/gh/boriska70/dockermon-go.svg?style=svg)](https://circleci.com/gh/boriska70/dockermon-go)
-[![Go Report Card](https://goreportcard.com/badge/github.com/boriska70/dockermon-go)](https://goreportcard.com/report/github.com/boriska70/dockermon-go)
-[![](https://badge.imagelayers.io/boriska70/dockermon:latest.svg)](https://imagelayers.io/?images=boriska70/dockermon:latest 'Get your own badge on imagelayers.io')
+[![CircleCI](https://circleci.com/gh/boriska70/dockemon-go.svg?style=svg)](https://circleci.com/gh/boriska70/dockemon-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/boriska70/dockemon-go)](https://goreportcard.com/report/github.com/boriska70/dockemon-go)
+[![](https://badge.imagelayers.io/boriska70/dockemon:latest.svg)](https://imagelayers.io/?images=boriska70/dockemon:latest 'Get your own badge on imagelayers.io')
 
-# dockermon-go
+# dockemon-go
 
 
 ### Build
- - docker build -t boriska70/dockermon-builder -f Dockerfile.build .
- - docker run -it --name=dockermon-builder boriska70/dockermon-builder
+ - docker build -t boriska70/dockemon-builder -f Dockerfile.build .
+ - docker run -it --name=dockemon-builder boriska70/dockemon-builder
  - mkdir .dist
- - docker cp  dockermon-builder:/go/src/github.com/boriska70/dockermon-go/.dist/dockermon ./.dist/
- - docker build -t boriska70/dockermon .
+ - docker cp  dockemon-builder:/go/src/github.com/boriska70/dockemon-go/.dist/dockemon ./.dist/
+ - docker build -t boriska70/dockemon .
 
 ### Run in docker
   - Assuming that we link to elasticsearch running as another docker named es:
-  `docker run --rm --name dmg --log-driver=json-file -v /var/run/docker.sock:/var/run/docker.sock --link es:es boriska70/dockermon-go -esurl=http://es:9200`
+  `docker run --rm --name dmg --log-driver=json-file -v /var/run/docker.sock:/var/run/docker.sock --link es:es boriska70/dockemon-go -esurl=http://es:9200`
   - Elasticsearch can be started as
   `docker run -d --name es -p 9200:9200 -p 9300:9300 elasticsearch elasticsearch -Des.network.host=0.0.0.0 -Des.network.bind_host=0.0.0.0 -Des.cluster.name=elasticlaster -Des.node.name=$(hostname)`
   - Kibana run: docker run --link es:elasticsearch -d -p5601:5601 --name kibana kibana

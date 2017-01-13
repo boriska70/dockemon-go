@@ -1,5 +1,5 @@
 FROM alpine:3.3
 
-COPY .dist/dockermon /usr/bin/dockermon
+COPY .dist/dockemon /usr/bin/dockemon
 
-CMD ["/usr/bin/dockermon"]
+CMD ["/usr/bin/dockemon"]

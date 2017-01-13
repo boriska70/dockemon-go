@@ -29,3 +29,5 @@ vendor
 .git
 .cover
 
+.dist
+

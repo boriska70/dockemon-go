@@ -2,7 +2,7 @@ package collectors
 
 import "context"
 
-// Host variable keeps static data for the host on which the dockermon-go is running.
+// Host variable keeps static data for the host on which the dockemon-go is running.
 var Host HostStaticData
 
 // HostStaticData type keeps data that does not change overtime for the given host.

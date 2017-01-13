@@ -1,4 +1,4 @@
-package: github.com/boriska70/dockermon-go
+package: github.com/boriska70/dockemon-go
 import:
 - package: github.com/Sirupsen/logrus
 - package: github.com/docker/docker

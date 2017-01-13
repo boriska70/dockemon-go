@@ -7,24 +7,24 @@ machine:
     - docker
 dependencies:
   override:
-    - docker build -t boriska70/dockermon-builder -f Dockerfile.build .
-    - docker run -t --name=dockermon-builder boriska70/dockermon-builder
+    - docker build -t boriska70/dockemon-builder -f Dockerfile.build .
+    - docker run -t --name=dockemon-builder boriska70/dockemon-builder
     - mkdir .dist
-    - docker cp  dockermon-builder:/go/src/github.com/boriska70/dockermon-go/.dist/dockermon ./.dist/
-    - docker build -t boriska70/dockermon .
-    - docker tag boriska70/dockermon boriska70/dockermon:$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
-    - docker tag boriska70/dockermon boriska70/dockermon:$CIRCLE_BRANCH
+    - docker cp  dockemon-builder:/go/src/github.com/boriska70/dockemon-go/.dist/dockemon ./.dist/
+    - docker build -t boriska70/dockemon .
+    - docker tag boriska70/dockemon boriska70/dockemon:$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
+    - docker tag boriska70/dockemon boriska70/dockemon:$CIRCLE_BRANCH
 test:
   override:
     # run tugbot tests and generate junit.xml reports
-    - docker run --rm --name dmg -e DOCKER_API_VERSION="1.21" -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockermon env
+    - docker run --rm --name dmg -e DOCKER_API_VERSION="1.21" -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockemon env
 deployment:
   continuous:
     branch: [master, develop, /feature_.*/]
     commands:
       # deply image to DockerHub
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push boriska70/dockermon
+      - docker push boriska70/dockemon
 general:
   artifacts:
     - .dist

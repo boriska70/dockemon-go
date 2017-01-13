@@ -1,14 +1,14 @@
 FROM golang:1.7-alpine
 
-ENV DOCKERMON_DIR /go/src/github.com/boriska70/dockermon-go
-WORKDIR $DOCKERMON_DIR
+ENV DOCKEMON_DIR /go/src/github.com/boriska70/dockemon-go
+WORKDIR $DOCKEMON_DIR
 
 
 # install curl apk
 RUN apk add --update curl
 
 # install Git apk
-RUN apk --update add git bash \
+RUN apk --update add git \
     && rm -rf /var/lib/apt/lists/* \
     && rm /var/cache/apk/*
 
@@ -25,7 +25,7 @@ RUN go get -v golang.org/x/tools/cmd/cover
 # go-junit-report - convert Go test into junit.xml format
 RUN go get -v github.com/jstemmer/go-junit-report
 
-COPY . $DOCKERMON_DIR
+COPY . $DOCKEMON_DIR
 RUN chmod u+x script/go_build.sh #script/coverage.sh
 
 CMD ["script/go_build.sh"]

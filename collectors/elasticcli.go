@@ -6,7 +6,7 @@ import (
 	elastic "gopkg.in/olivere/elastic.v3"
 )
 
-var indexName = "dockermon"
+var indexName = "dockemon"
 
 type esClient struct {
 	client *elastic.Client
