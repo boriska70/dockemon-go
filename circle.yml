@@ -23,7 +23,7 @@ test:
     # copy test results
     - cp dockemon-go/.cover/*_tests.xml $CIRCLE_TEST_REPORTS
     # deploy test coverage results to codecov
-    - bash <(curl -s https://codecov.io/bash) -f .cover/cover.out
+    - bash <(curl -s https://codecov.io/bash) -f dockemon-go/.cover/cover.out
 
 
 deployment:
