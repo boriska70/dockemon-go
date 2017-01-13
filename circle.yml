@@ -8,7 +8,7 @@ machine:
   environment:
     PROJECT_NAME: dockemon-go
     IMAGE_NAME: boriska70/$PROJECT_NAME
-    PROJECT_PATH: /go/src/github.com/boriska70/$PROJECT_NAME
+    PROJECT_PATH: /home/ubuntu/$PROJECT_NAME
 checkout:
   post:
     - git fetch --unshallow || true
