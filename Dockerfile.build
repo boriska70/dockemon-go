@@ -26,6 +26,6 @@ RUN go get -v golang.org/x/tools/cmd/cover
 RUN go get -v github.com/jstemmer/go-junit-report
 
 COPY . $DOCKEMON_DIR
-RUN chmod u+x script/go_build.sh script/coverage.sh
+RUN chmod u+x script/*.sh
 
 CMD ["script/go_build.sh"]
