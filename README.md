@@ -18,6 +18,11 @@
   - Elasticsearch can be started as
   `docker run -d --name es -p 9200:9200 -p 9300:9300 elasticsearch elasticsearch -Des.network.host=0.0.0.0 -Des.network.bind_host=0.0.0.0 -Des.cluster.name=elasticlaster -Des.node.name=$(hostname)`
   - Kibana run: docker run --link es:elasticsearch -d -p5601:5601 --name kibana kibana
+  - NOTE: run ```sudo sysctl vm.max_map_count=262144``` before starting Elasticsearch
+
+### Run in docker-compose
+  - docker-compose up
+  - NOTE: run ```sudo sysctl vm.max_map_count=262144``` before starting compose
 
 Useful:
   - Get containers: curl --unix-socket /var/run/docker.sock http:/containers/json (see https://docs.docker.com/engine/reference/api/docker_remote_api/ for details)
