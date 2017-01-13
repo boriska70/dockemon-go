@@ -9,6 +9,11 @@ machine:
     PROJECT_NAME: dockemon-go
     IMAGE_NAME: boriska70/$PROJECT_NAME
     PROJECT_PATH: /go/src/github.com/boriska70/$PROJECT_NAME
+checkout:
+  post:
+    - git fetch --unshallow || true
+    - git fetch --tags
+    - export RELEASE_TAG=$(git describe --tags)
 dependencies:
   override:
     - docker build -t boriska70/dockemon-builder -f Dockerfile.build .
