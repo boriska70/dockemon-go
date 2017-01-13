@@ -8,7 +8,7 @@ machine:
 dependencies:
   override:
     - docker build -t boriska70/dockemon-builder -f Dockerfile.build .
-    - docker run -it -v /home/ubuntu/dockemon-go:/go/src/github.com/boriska70/dockemon-go -w /go/src/github.com/boriska70/dockemon-go boriska70/dockemon-builder
+    - docker run -t --name dockemon-builder -v /home/ubuntu/dockemon-go:/go/src/github.com/boriska70/dockemon-go -w /go/src/github.com/boriska70/dockemon-go boriska70/dockemon-builder
     - mkdir -p .dist
     - docker cp  dockemon-builder:/go/src/github.com/boriska70/dockemon-go/.dist/dockemon .dist/
     - docker build -t boriska70/dockemon .
