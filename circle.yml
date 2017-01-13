@@ -18,10 +18,10 @@ test:
   override:
     # run tugbot tests and generate junit.xml reports
     - docker run --rm --name dmg-env -e DOCKER_API_VERSION="1.21" -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockemon env
-    - docker run --name dmg-tests -e DOCKER_API_VERSION="1.21" v /home/ubuntu/dockemon-go:/go/src/github.com/boriska70/dockemon-go -w /go/src/github.com/boriska70/dockemon-go -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockemon-builder glide install && script/coverage.sh
+    - docker run --name dmg-tests -e DOCKER_API_VERSION="1.21" -v /home/ubuntu/dockemon-go:/go/src/github.com/boriska70/dockemon-go -w /go/src/github.com/boriska70/dockemon-go -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockemon-builder script/coverage.sh
   post:
     # copy test results
-    - cp .cover/*_tests.xml $CIRCLE_TEST_REPORTS
+    - cp dockemon-go/.cover/*_tests.xml $CIRCLE_TEST_REPORTS
     # deploy test coverage results to codecov
     - bash <(curl -s https://codecov.io/bash) -f .cover/cover.out
 
