@@ -17,7 +17,7 @@ checkout:
 dependencies:
   override:
     - docker build -t boriska70/dockemon-builder -f Dockerfile.build .
-    - docker run -t --name=dockemon-builder boriska70/dockemon-builder
+    - docker run -t --name=dockemon-builder -v "$PWD/dockemon-go":"$PROJECT_PATH" -w "$PROJECT_PATH"  boriska70/dockemon-builder
     - mkdir .dist
     - docker cp  dockemon-builder:/go/src/github.com/boriska70/dockemon-go/.dist/dockemon .dist/
     - docker build -t boriska70/dockemon .
@@ -27,7 +27,7 @@ test:
   override:
     # run tugbot tests and generate junit.xml reports
     - docker run --rm --name dmg-env -e DOCKER_API_VERSION="1.21" -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockemon env
-    - docker run --name dmg-tests -e DOCKER_API_VERSION="1.21" -v "$PWD/dockemon-go":/go/src/github.com/boriska70/dockemon-go -w /go/src/github.com/boriska70/dockemon-go  -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockemon-builder glide install && script/coverage.sh
+    - docker run --name dmg-tests -v "$PWD/dockemon-go":"$PROJECT_PATH" -w "$PROJECT_PATH" -e DOCKER_API_VERSION="1.21" -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockemon-builder script/coverage.sh
   post:
     # copy test results
     - cp .cover/*_tests.xml $CIRCLE_TEST_REPORTS
