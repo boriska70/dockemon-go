@@ -5,6 +5,10 @@ machine:
     - sudo chmod 0755 /usr/bin/docker
   services:
     - docker
+  environment:
+    PROJECT_NAME: dockemon-go
+    IMAGE_NAME: boriska70/$PROJECT_NAME
+    PROJECT_PATH: /go/src/github.com/boriska70/$PROJECT_NAME
 dependencies:
   override:
     - docker build -t boriska70/dockemon-builder -f Dockerfile.build .
@@ -17,7 +21,15 @@ dependencies:
 test:
   override:
     # run tugbot tests and generate junit.xml reports
-    - docker run --rm --name dmg -e DOCKER_API_VERSION="1.21" -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockemon env
+    - docker run --rm --name dmg-env -e DOCKER_API_VERSION="1.21" -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockemon env
+    - docker run --rm --name dmg-tests -e DOCKER_API_VERSION="1.21" -v /var/run/docker.sock:/var/run/docker.sock boriska70/dockemon-builder ./script/coverage.sh
+  post:
+    # copy test results
+    - cp .cover/*_tests.xml $CIRCLE_TEST_REPORTS
+    # deploy test coverage results to codecov
+    - bash <(curl -s https://codecov.io/bash) -f .cover/cover.out
+
+
 deployment:
   continuous:
     branch: [master, develop, /feature_.*/]
@@ -28,3 +40,4 @@ deployment:
 general:
   artifacts:
     - .dist
+    - .cover
